@@ -14,12 +14,14 @@
   "DBMarketID:":0,
   "configurations": [
     {
+      "DBTable":"CSGO_Items",
       "Name": "CSGO",
       "Appid": "730",
       "ExtractRangeStart": 0,
       "ExtractRangeEnd": -1
     },
     {
+      "DBTable":"PUBG_Items",
       "Name": "PUBG",
       "Appid": "578080",
       "ExtractRangeStart": 0,
