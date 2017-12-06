@@ -1,0 +1,28 @@
+{
+  "RequestSpeed": 12,
+  "UseTorPivots": true,
+  "MaxGoDBRoutines": 100,
+  "MaxGoHERoutines": 1000,
+  "TorProxy": "socks5://IP:PORT",
+  "TorControl": "IP:PORT",
+  "TorControlPass": "PASSWORD",
+  "RequestsBeforeTorSwitch": 5,
+  "DatabaseURL": "IP:PORT",
+  "DatabaseUser": "Username",
+  "DatabasePassword": "Password",
+  "DatabaseName": "DBName",
+  "configurations": [
+    {
+      "Name": "CSGO",
+      "Appid": "730",
+      "ExtractRangeStart": 0,
+      "ExtractRangeEnd": -1
+    },
+    {
+      "Name": "PUBG",
+      "Appid": "578080",
+      "ExtractRangeStart": 0,
+      "ExtractRangeEnd": -1
+    }
+  ]
+}
