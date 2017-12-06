@@ -36,6 +36,7 @@ type ConfigFile struct{
   TorControl string `json:"TorControl"`
   TorControlPass string `json:"TorControlPass"`
   RequestsBeforeTorSwitch int `json:"RequestsBeforeTorSwitch"`
+  DatabaseMarketID int `json:"DBMarketID"`
 
 }
 

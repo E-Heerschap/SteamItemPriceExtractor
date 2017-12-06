@@ -12,6 +12,7 @@ import (
 
 type DatabaseWorker struct {
   databaseChan chan []SteamHttp.SteamItem
+  marketID int
   dbUrl string
   dbUser string
   dbPass string
@@ -48,34 +49,36 @@ func (dw *DatabaseWorker) handleJob (si []SteamHttp.SteamItem){
   //Doing this so we can have the correct amount of wild cards.
   var buffer bytes.Buffer
   //Creating Temporary table to store values in
-  buffer.WriteString("CREATE temporary TABLE TempTable (ItemName VARCHAR(200), ImageUrl VARCHAR(500) );\n")
+  buffer.WriteString("CREATE temporary TABLE TempTable (ItemName VARCHAR(200), ImageUrl VARCHAR(500), MarketID INT(11), GameID INT(11));\n")
   queryformat := buffer.String()
   buffer.Reset()
   _, err = db.Exec(queryformat)
 
-  buffer.WriteString("INSERT INTO TempTable (ItemName, ImageUrl) Values ")
+  buffer.WriteString("INSERT INTO TempTable (ItemName, ImageUrl, MarketID, GameID) Values ")
   for i := 0; i < len(si) - 1; i++ {
-    buffer.WriteString("(?, ?),")
+    buffer.WriteString("(?, ?, ?, ?),")
   }
 
   //Last one should not have a comma
-  buffer.WriteString("(?, ?);")
+  buffer.WriteString("(?, ?, ?, ?);")
   queryformat = buffer.String()
 
 
   //Creating array to unpack as arugments arguments.
   //https://stackoverflow.com/questions/17555857/go-unpacking-array-as-arguments
-  arguments := make([]interface{}, len(si) * 2)
+  arguments := make([]interface{}, len(si) * 4)
   for i := 0; i < len(si); i++{
-    arguments[i*2] = si[i].NormalName
-    arguments[(i*2) + 1] = si[i].ImageUrl
+    arguments[i*4] = si[i].NormalName
+    arguments[(i*4) + 1] = si[i].ImageUrl
+    arguments[(i*4) + 2] = dw.marketID
+    arguments[(i*4) + 3] = si[i].AppId
   }
 
   queryformat = buffer.String()
   buffer.Reset()
   _, err = db.Exec(queryformat, arguments...)
 
-  buffer.WriteString("INSERT INTO Steam_Items (ItemName, ImageUrl) (SELECT DISTINCT ItemName, ImageUrl FROM TempTable WHERE TempTable.ItemName NOT IN (SELECT Steam_Items.ItemName FROM Steam_Items));")
+  buffer.WriteString("INSERT INTO Steam_Items (ItemName, ImageUrl, MarketID, GameID) (SELECT DISTINCT ItemName, ImageUrl, MarketID, GameID FROM TempTable WHERE TempTable.ItemName NOT IN (SELECT Steam_Items.ItemName FROM Steam_Items));")
   queryformat = buffer.String()
 
   _, err = db.Exec(queryformat)

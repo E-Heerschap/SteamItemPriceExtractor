@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 	"fmt"
+	"strconv"
 )
 
 //This is set to the Tor Proxy URL
@@ -20,6 +21,7 @@ var TorProxy string
 type SteamItem struct {
 	NormalName string
 	ImageUrl   string
+	AppId int
 }
 
 //GetTotalCount gets the total number of items on the steam market for an Appid.
@@ -42,7 +44,7 @@ func GetTotalCount(appId string) int {
 
 //GetSteamItemsData returns a list containing SteamItem id's.
 func GetSteamItemsData(Appid string, start string, count string, useTor bool) ([]SteamItem, bool, int) {
-
+	fmt.Println("Getting steam item data")
 	//Getting response from steam
 	respBody, success, HttpCode := sendSCMSRequest(Appid, start, count, useTor)
 
@@ -69,6 +71,7 @@ func GetSteamItemsData(Appid string, start string, count string, useTor bool) ([
 		switch {
 		case token == html.ErrorToken:
 			//End of document
+			fmt.Println("Returning steam items")
 			return steamItems, true, HttpCode
 		case token == html.StartTagToken:
 			tag := tokens.Token()
@@ -101,6 +104,7 @@ func GetSteamItemsData(Appid string, start string, count string, useTor bool) ([
 						imagesStr := imgParam.Val
 						imageArr := strings.Split(imagesStr, " ")
 						steamItems[itemCounter].ImageUrl = imageArr[len(imageArr)-2]
+						steamItems[itemCounter].AppId, _ = strconv.Atoi(Appid);
 						itemCounter++
 					}
 				}

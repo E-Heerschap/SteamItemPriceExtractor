@@ -6,7 +6,6 @@ package main
 import (
 	"bitbucket.org/SneakyHideout/ItemManager/HashNameExtractor/SteamHttp"
 	"fmt"
-	"net/http"
 	"log"
 )
 
@@ -22,6 +21,7 @@ type requestWorker struct {
 	jobChan   chan job
 	dbJobChan chan []SteamHttp.SteamItem
 	err429Chan chan job
+	jobCompletedChan chan bool
 	id        int
 	iteration int
 }
@@ -32,22 +32,22 @@ func (rw *requestWorker) handleJob(newJob job) {
 	rw.iteration++
 
 	si, success, httpCode := SteamHttp.GetSteamItemsData(newJob.appId, newJob.start, newJob.count, true)
-
+	fmt.Println("Returned")
 	if !success {
 		log.Fatal("Failed to get steam item data")
 		return
 	}
 
-	if httpCode != http.StatusOK {
-		if httpCode == 429 {
-			rw.err429Chan <- newJob
-			return
-		}
-
-		fmt.Printf("Http code neither 200 or 429! Code: %d", httpCode)
+	if httpCode == 429 {
+		rw.err429Chan <- newJob
+		return
 	}else{
-
+		fmt.Println("Sending to database chan")
 		rw.dbJobChan <- si
+		fmt.Println("Sent to db chan")
+		rw.jobCompletedChan <- true
+
+
 
 	}
 

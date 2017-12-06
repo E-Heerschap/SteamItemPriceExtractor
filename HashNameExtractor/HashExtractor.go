@@ -75,7 +75,7 @@ func main() {
 
 		totalNumberOfJobs := jobsList.Len()
 
-		initialReqWorker := requestWorker{id: idCount, jobChan: jobChan, err429Chan: err429Chan}
+		initialReqWorker := requestWorker{id: idCount, jobChan: jobChan, err429Chan: err429Chan, jobCompletedChan: jobCompletedChan, dbJobChan: dbJobChan}
 		go initialReqWorker.Listen()
 		idCount++
 
@@ -94,6 +94,7 @@ func main() {
 			case completed := <-jobCompletedChan:
 				//TODO find a better way to do this.
 				if completed {
+					fmt.Println("Completed")
 					jobsCompleted++
 				}
 				continue
@@ -120,7 +121,7 @@ func main() {
 					torSwitchCounter++
 
 				default:
-					rw := requestWorker{jobChan: jobChan, id: idCount, err429Chan: err429Chan, dbJobChan: dbJobChan}
+					rw := requestWorker{jobChan: jobChan, id: idCount, err429Chan: err429Chan, dbJobChan: dbJobChan, jobCompletedChan: jobCompletedChan}
 					go rw.StartWorker(newJob)
 					idCount++
 					time.Sleep(time.Millisecond * 1)
@@ -132,7 +133,7 @@ func main() {
 
 			//Creating new database worker if the channel has more than 1 job in it.
 			if len(dbJobChan) > 1 {
-				dw := DatabaseWorker{databaseChan: dbJobChan}
+				dw := DatabaseWorker{databaseChan: dbJobChan, marketID: cfgFile.DatabaseMarketID}
 				go dw.StartWorker(cfgFile.DatabaseURL, cfgFile.DatabaseUser, cfgFile.DatabasePassword, cfgFile.DatabaseName)
 			}
 
