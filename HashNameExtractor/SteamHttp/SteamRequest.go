@@ -71,7 +71,6 @@ func GetSteamItemsData(Appid string, start string, count string, useTor bool) ([
 		switch {
 		case token == html.ErrorToken:
 			//End of document
-			fmt.Println("Returning steam items")
 			return steamItems, true, HttpCode
 		case token == html.StartTagToken:
 			tag := tokens.Token()
@@ -157,7 +156,7 @@ func sendSCMSRequest(Appid string, start string, count string, useTor bool) ([]b
 	} else {
 		client = &http.Client{Timeout: time.Second * time.Duration(timeout)}
 	}
-	fmt.Println(reqUrl.String())
+
 	respBody, success, HttpCode := HttpUtil.SendHttpRequest(client, reqUrl.String())
 
 	return respBody, success, HttpCode

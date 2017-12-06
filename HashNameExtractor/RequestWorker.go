@@ -32,7 +32,7 @@ func (rw *requestWorker) handleJob(newJob job) {
 	rw.iteration++
 
 	si, success, httpCode := SteamHttp.GetSteamItemsData(newJob.appId, newJob.start, newJob.count, true)
-	fmt.Println("Returned")
+	fmt.Printf("Amount of items returned: %d \n", len(si))
 	if !success {
 		log.Fatal("Failed to get steam item data")
 		return
@@ -42,16 +42,14 @@ func (rw *requestWorker) handleJob(newJob job) {
 		rw.err429Chan <- newJob
 		return
 	}else{
-		fmt.Println("Sending to database chan")
+
 		rw.dbJobChan <- si
-		fmt.Println("Sent to db chan")
+
 		rw.jobCompletedChan <- true
 
 
 
 	}
-
-	fmt.Printf("Id: %d, Iteration: %d, HTTPCODE: %d\n", rw.id, rw.iteration, httpCode)
 
 }
 

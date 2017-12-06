@@ -24,7 +24,6 @@ func (dw *DatabaseWorker) handleJob (si []SteamHttp.SteamItem){
   //Data source name (https://github.com/go-sql-driver/mysql/#dsn-data-source-name)
   var dsn string
   dsn = fmt.Sprintf("%s:%s@tcp(%s)/%s", dw.dbUser, dw.dbPass, dw.dbUrl, dw.dbName)
-  fmt.Println(dsn)
   //Creating SQL handle
   //This must use the 'mysql' as the driver.
   //This driver can be imported from github.com/go-sql-driver/mysql
@@ -55,12 +54,16 @@ func (dw *DatabaseWorker) handleJob (si []SteamHttp.SteamItem){
   _, err = db.Exec(queryformat)
 
   buffer.WriteString("INSERT INTO TempTable (ItemName, ImageUrl, MarketID, GameID) Values ")
+  counter := 0
   for i := 0; i < len(si) - 1; i++ {
     buffer.WriteString("(?, ?, ?, ?),")
+    counter++
   }
 
   //Last one should not have a comma
   buffer.WriteString("(?, ?, ?, ?);")
+  counter++
+  fmt.Printf("Amount written to db: %d \n", counter)
   queryformat = buffer.String()
 
 

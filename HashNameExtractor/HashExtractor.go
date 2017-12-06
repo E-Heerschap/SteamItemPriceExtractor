@@ -94,7 +94,6 @@ func main() {
 			case completed := <-jobCompletedChan:
 				//TODO find a better way to do this.
 				if completed {
-					fmt.Println("Completed")
 					jobsCompleted++
 				}
 				continue
@@ -108,8 +107,6 @@ func main() {
 			if jobsList.Len() != 0 {
 
 				newJob := jobsList.Remove(jobsList.Front()).(job)
-				fmt.Println(newJob.start)
-				fmt.Println(jobsList.Len())
 
 				select {
 
@@ -127,7 +124,6 @@ func main() {
 					time.Sleep(time.Millisecond * 1)
 				}
 
-				fmt.Printf("Appid: %s, Start: %s\n", config.AppId, newJob.start)
 				time.Sleep(time.Millisecond * time.Duration(60.0/cfgFile.RequestSpeed*1000))
 			}
 
@@ -139,13 +135,14 @@ func main() {
 
 		}
 
+		var waitStr string
+		fmt.Scanln(&waitStr)
 		close(jobChan)
 		close(dbJobChan)
 	}
 
 	//Start database service
 
-	var waitStr string
-	fmt.Scanln(&waitStr)
+
 
 }
