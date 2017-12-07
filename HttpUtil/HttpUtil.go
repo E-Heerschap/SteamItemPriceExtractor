@@ -72,7 +72,7 @@ func SwitchTorEndpoint(torControl string, torPass string){
   client := SetupProxyClient("socks5://127.0.0.1:9050", 60)
   resp, success, httpcode := SendHttpRequest(client, "http://checkip.amazonaws.com/")
       if !success || ( httpcode != http.StatusOK ){
-        log.Fatal("Failed to check ip")
+        fmt.Println("Failed to check ip")
       }
 
   fmt.Println(string(resp))

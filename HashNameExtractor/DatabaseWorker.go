@@ -7,6 +7,7 @@ import (
   "bytes"
   "database/sql"
   "log"
+  "regexp"
 )
 
 
@@ -17,6 +18,7 @@ type DatabaseWorker struct {
   dbUser string
   dbPass string
   dbName string
+  dbTable string
 }
 
 func (dw *DatabaseWorker) handleJob (si []SteamHttp.SteamItem){
@@ -48,20 +50,20 @@ func (dw *DatabaseWorker) handleJob (si []SteamHttp.SteamItem){
   //Doing this so we can have the correct amount of wild cards.
   var buffer bytes.Buffer
   //Creating Temporary table to store values in
-  buffer.WriteString("CREATE temporary TABLE TempTable (ItemName VARCHAR(200), ImageUrl VARCHAR(500), MarketID INT(11), GameID INT(11));\n")
+  buffer.WriteString("CREATE temporary TABLE TempTable (ItemName VARCHAR(200), ImageUrl VARCHAR(500), MarketID INT(11));\n")
   queryformat := buffer.String()
   buffer.Reset()
   _, err = db.Exec(queryformat)
 
-  buffer.WriteString("INSERT INTO TempTable (ItemName, ImageUrl, MarketID, GameID) Values ")
+  buffer.WriteString("INSERT INTO TempTable (ItemName, ImageUrl, MarketID) Values ")
   counter := 0
   for i := 0; i < len(si) - 1; i++ {
-    buffer.WriteString("(?, ?, ?, ?),")
+    buffer.WriteString("(?, ?, ?),")
     counter++
   }
 
   //Last one should not have a comma
-  buffer.WriteString("(?, ?, ?, ?);")
+  buffer.WriteString("(?, ?, ?);")
   counter++
   fmt.Printf("Amount written to db: %d \n", counter)
   queryformat = buffer.String()
@@ -69,23 +71,21 @@ func (dw *DatabaseWorker) handleJob (si []SteamHttp.SteamItem){
 
   //Creating array to unpack as arugments arguments.
   //https://stackoverflow.com/questions/17555857/go-unpacking-array-as-arguments
-  arguments := make([]interface{}, len(si) * 4)
+  arguments := make([]interface{}, len(si) * 3)
   for i := 0; i < len(si); i++{
-    arguments[i*4] = si[i].NormalName
-    arguments[(i*4) + 1] = si[i].ImageUrl
-    arguments[(i*4) + 2] = dw.marketID
-    arguments[(i*4) + 3] = si[i].AppId
+    arguments[i*3] = si[i].NormalName
+    arguments[(i*3) + 1] = si[i].ImageUrl
+    arguments[(i*3) + 2] = dw.marketID
   }
 
   queryformat = buffer.String()
-  buffer.Reset()
+
   _, err = db.Exec(queryformat, arguments...)
 
-  buffer.WriteString("INSERT INTO Steam_Items (ItemName, ImageUrl, MarketID, GameID) (SELECT DISTINCT ItemName, ImageUrl, MarketID, GameID FROM TempTable WHERE TempTable.ItemName NOT IN (SELECT Steam_Items.ItemName FROM Steam_Items));")
-  queryformat = buffer.String()
+  fillTblQuery := "INSERT INTO " + dw.dbTable + " (ItemName, ImageUrl, MarketID) (SELECT DISTINCT ItemName, ImageUrl, MarketID FROM TempTable WHERE TempTable.ItemName NOT IN (SELECT " + dw.dbTable + ".ItemName FROM " + dw.dbTable + "));"
 
-  _, err = db.Exec(queryformat)
-  //_, err = db.Exec(queryformat, arguments...)
+  _, err = db.Exec(fillTblQuery)
+
 
   if err != nil {
     fmt.Println(err)
@@ -94,12 +94,13 @@ func (dw *DatabaseWorker) handleJob (si []SteamHttp.SteamItem){
 
 }
 
-func (dw *DatabaseWorker) StartWorker(databaseUrl string, databaseUser string, databasePass string, databaseName string) {
+func (dw *DatabaseWorker) StartWorker(databaseUrl string, databaseUser string, databasePass string, databaseName string, databaseTable string) {
 
   dw.dbUrl = databaseUrl
   dw.dbUser = databaseUser
   dw.dbPass = databasePass
   dw.dbName = databaseName
+  dw.dbTable = databaseTable
 
   for{
 

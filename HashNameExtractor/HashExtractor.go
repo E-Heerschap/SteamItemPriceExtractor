@@ -22,6 +22,7 @@ func createJobsList(scanConfig Config.Config) *list.List {
 	if scanConfig.RangeEnd == -1 {
 		//Set end of range to total number of steam items for Appid
 		rangeEnd = SteamHttp.GetTotalCount(scanConfig.AppId)
+		fmt.Println(rangeEnd)
 	} else {
 		rangeEnd = scanConfig.RangeEnd
 	}
@@ -80,7 +81,7 @@ func main() {
 		idCount++
 
 		initialDBWorker := DatabaseWorker{databaseChan: dbJobChan}
-		go initialDBWorker.StartWorker(cfgFile.DatabaseURL, cfgFile.DatabaseUser, cfgFile.DatabasePassword, cfgFile.DatabaseName)
+		go initialDBWorker.StartWorker(cfgFile.DatabaseURL, cfgFile.DatabaseUser, cfgFile.DatabasePassword, cfgFile.DatabaseName, config.DBTable)
 
 		requestsBeforeTorSwitch := cfgFile.RequestsBeforeTorSwitch
 		torSwitchCounter := 0
@@ -130,7 +131,7 @@ func main() {
 			//Creating new database worker if the channel has more than 1 job in it.
 			if len(dbJobChan) > 1 {
 				dw := DatabaseWorker{databaseChan: dbJobChan, marketID: cfgFile.DatabaseMarketID}
-				go dw.StartWorker(cfgFile.DatabaseURL, cfgFile.DatabaseUser, cfgFile.DatabasePassword, cfgFile.DatabaseName)
+				go dw.StartWorker(cfgFile.DatabaseURL, cfgFile.DatabaseUser, cfgFile.DatabasePassword, cfgFile.DatabaseName, config.DBTable)
 			}
 
 		}

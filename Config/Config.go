@@ -17,6 +17,7 @@ type Config struct{
   AppId string `json:"Appid"`//Steam app id to scan
   RangeStart int `json:"ExtractRangeStart"`
   RangeEnd int `json:"ExtractRangeEnd"`//Ranges of items scan.
+  DBTable string `json:"DBTable` //Table name to store data in
 }
 
 

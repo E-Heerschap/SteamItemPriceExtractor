@@ -71,7 +71,8 @@ func GetSteamItemsData(Appid string, start string, count string, useTor bool) ([
 		switch {
 		case token == html.ErrorToken:
 			//End of document
-			return steamItems, true, HttpCode
+			fmt.Println(itemCounter)
+			return steamItems[:itemCounter], true, HttpCode
 		case token == html.StartTagToken:
 			tag := tokens.Token()
 
@@ -113,8 +114,8 @@ func GetSteamItemsData(Appid string, start string, count string, useTor bool) ([
 		}
 	}
 
-
-	return steamItems, true, HttpCode
+	fmt.Println(itemCounter)
+	return steamItems[:itemCounter], true, HttpCode
 
 }
 
