@@ -140,6 +140,8 @@ func main() {
 		fmt.Scanln(&waitStr)
 		close(jobChan)
 		close(dbJobChan)
+		close(err429Chan)
+
 	}
 
 	//Start database service

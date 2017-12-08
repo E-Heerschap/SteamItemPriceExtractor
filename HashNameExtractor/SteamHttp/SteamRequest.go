@@ -86,7 +86,10 @@ func GetSteamItemsData(Appid string, start string, count string, useTor bool) ([
 						href := a.Val
 						slashIndex := strings.LastIndex(href, "/")
 						hashName := href[slashIndex+1:]
-						normalName, _ := url.QueryUnescape(hashName)
+						normalName, err := url.QueryUnescape(hashName)
+						if err != nil {
+							log.Fatal("Failed to use unescape query, try pathescape?")
+						}
 						steamItems[itemCounter].NormalName = normalName
 					}
 				}

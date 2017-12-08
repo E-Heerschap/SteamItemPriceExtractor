@@ -1,0 +1,27 @@
+{
+
+  "RequestSpeed":1,
+  "MarketID":0,
+  "NoOfReqRoutines":8,
+  "TorProxy": "socks5://IP:PORT",
+  "TorControl": "IP:PORT",
+  "TorControlPass": "PASSWORD",
+  "RequestsBeforeTorSwitch": 5,
+  "DatabaseURL": "IP:PORT",
+  "DatabaseUser": "Username",
+  "DatabasePassword": "Password",
+  "DatabaseName": "DBName",
+  "Currency":"1",
+  "configurations": [
+    {
+      "AppId":"730",
+      "DBNamesTable": "NamesTable",
+      "DBPriceTable": "PricesTable"
+    },{
+      "AppId":"578080",
+      "DBNamesTable":"NamesTable",
+      "DBPriceTable":"PricesTable"
+    }
+  ]
+
+}

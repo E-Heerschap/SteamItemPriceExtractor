@@ -9,3 +9,5 @@ Database VARCHAR fields must use UTF-8 encoding to work correctly (Otherwise we 
 [Get steam app ip list](http://api.steampowered.com/ISteamApps/GetAppList/v0001)
 
 [Get MySql Driver](https://github.com/go-sql-driver/mysql)
+
+[Get top few item listings](https://stackoverflow.com/questions/26513891/get-steam-item-prices)

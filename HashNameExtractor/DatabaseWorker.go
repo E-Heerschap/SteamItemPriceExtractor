@@ -7,7 +7,6 @@ import (
   "bytes"
   "database/sql"
   "log"
-  "regexp"
 )
 
 
@@ -85,6 +84,18 @@ func (dw *DatabaseWorker) handleJob (si []SteamHttp.SteamItem){
   fillTblQuery := "INSERT INTO " + dw.dbTable + " (ItemName, ImageUrl, MarketID) (SELECT DISTINCT ItemName, ImageUrl, MarketID FROM TempTable WHERE TempTable.ItemName NOT IN (SELECT " + dw.dbTable + ".ItemName FROM " + dw.dbTable + "));"
 
   _, err = db.Exec(fillTblQuery)
+
+    res, err := db.Query("SELECT COUNT(CSGO_Items.ItemName) FROM Markets.CSGO_Items;")
+
+    var count int
+
+    for res.Next() {
+      err = res.Scan(&count)
+      if err != nil {
+        fmt.Println(err)
+      }
+      fmt.Printf("Number of rows: %d \r\n", count)
+    }
 
 
   if err != nil {

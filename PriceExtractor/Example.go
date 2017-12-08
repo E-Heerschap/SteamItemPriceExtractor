@@ -66,7 +66,7 @@ func spamTest(i int){
 	fmt.Println("Ending ", strconv.Itoa(i))
 }
 
-func main() {
+func test() {
 
 
 	for i := 0; i < 10000; i++ {
