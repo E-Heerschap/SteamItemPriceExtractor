@@ -82,8 +82,10 @@ CREATE TABLE `Game_Items` (
   `MarketID` int(11) DEFAULT NULL,
   `ItemName` varchar(200) COLLATE utf8mb4_bin NOT NULL DEFAULT '',
   `ImageUrl` varchar(500) COLLATE utf8mb4_bin NOT NULL DEFAULT '',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=185 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 ``
 
 ##Game_Prices
@@ -93,13 +95,15 @@ This is a layout for a table which will store information on the prices of items
 The ItemID field is a foreign key to the ID field on the Game_Items table.
 
 SQL: ``
-CREATE TABLE `CSGO_Prices` (
+CREATE TABLE `Game_Prices` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `ItemID` int(11) NOT NULL,
   `MarketID` int(11) NOT NULL,
   `LowestPrice` int(11) DEFAULT NULL,
   `Volume` int(11) DEFAULT NULL,
   `MedianPrice` int(11) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;``
 

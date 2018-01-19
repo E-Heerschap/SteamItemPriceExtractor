@@ -85,9 +85,14 @@ func (dw *DatabaseWorker) handleJob (si []SteamHttp.SteamItem){
 
   _, err = db.Exec(fillTblQuery)
 
-    res, err := db.Query("SELECT COUNT(CSGO_Items.ItemName) FROM Markets.CSGO_Items;")
+    res, err := db.Query("SELECT COUNT(CSGO_Items.ItemName) FROM homestead.CSGO_Items;")
 
     var count int
+
+    if err != nil {
+      fmt.Println(err)
+     fmt.Println(queryformat)
+    }else{
 
     for res.Next() {
       err = res.Scan(&count)
@@ -97,11 +102,8 @@ func (dw *DatabaseWorker) handleJob (si []SteamHttp.SteamItem){
       fmt.Printf("Number of rows: %d \r\n", count)
     }
 
-
-  if err != nil {
-    fmt.Println(err)
-   fmt.Println(queryformat)
   }
+
 
 }
 
