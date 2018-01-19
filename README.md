@@ -67,14 +67,48 @@ Then save the file and restart tor.
 
     $ sudo service tor restart
 
+#Database Scheme
+This package uses MySQL. MySQL should come pre-installed on any Homestead system (a vagrant box created by the makers of Laravel). If the system does not have MySQL installed, a guide can be found [here](https://dev.mysql.com/doc/refman/5.5/en/linux-installation-native.html) to install it.
+
+**Make sure all database tables with use UTF-8**
+
+##Game_Items
+
+This is a layout for a table which will store information on items from a specific steam game. For example, our database has/will have the table: CSGO_Items which stores the information on CSGO items.
+
+SQL: ``
+CREATE TABLE `Game_Items` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `MarketID` int(11) DEFAULT NULL,
+  `ItemName` varchar(200) COLLATE utf8mb4_bin NOT NULL DEFAULT '',
+  `ImageUrl` varchar(500) COLLATE utf8mb4_bin NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+``
+
+##Game_Prices
+
+This is a layout for a table which will store information on the prices of items from a game. For example, our database has/will have the table: CSGO_Prices which would store the information on CSGO item prices.
+
+The ItemID field is a foreign key to the ID field on the Game_Items table.
+
+SQL: ``
+CREATE TABLE `CSGO_Prices` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `ItemID` int(11) NOT NULL,
+  `MarketID` int(11) NOT NULL,
+  `LowestPrice` int(11) DEFAULT NULL,
+  `Volume` int(11) DEFAULT NULL,
+  `MedianPrice` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;``
+
 
 #TODO ON README
 
 * Explain configuration files
 
 * Explain which directories to compile each of the seperate packages in.
-
-* Explain database setup
 
 
 ##Notes:
