@@ -4,7 +4,6 @@
 package main
 
 import (
-	"bitbucket.org/SneakyHideout/ItemManager/Config"
 	"bitbucket.org/SneakyHideout/ItemManager/HashNameExtractor/SteamHttp"
 	"bitbucket.org/SneakyHideout/ItemManager/HttpUtil"
 	"container/list"
@@ -15,7 +14,7 @@ import (
 )
 
 //createJobsList creates a new list of jobs from a Config.
-func createJobsList(scanConfig Config.Config) *list.List {
+func createJobsList(scanConfig Config) *list.List {
 
 	//Finding range max value to request items for.
 	var rangeEnd int
@@ -46,7 +45,7 @@ func main() {
 	log.Print("Starting HashExtractor")
 
 	//Load Config
-	cfgFile, success := Config.NewConfigFile()
+	cfgFile, success := NewConfigFile()
 	if !success {
 		log.Print("Stopping HashExtractor")
 		return

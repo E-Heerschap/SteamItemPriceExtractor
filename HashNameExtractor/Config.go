@@ -1,7 +1,7 @@
-//This is a container to hold handle the configurations for the PriceExtractor.
+//This is a container to hold handle the configurations for the HashNameExtractor.
 //Author: Edwin Heerschap
 
-package Config
+package main
 
 import (
   "io/ioutil"
