@@ -17,7 +17,7 @@ func main() {
 	for _, config := range cfgFile.Configurations {
 
 		//List of items to scan information for
-		itemsList := getAllItems(cfgFile.DatabaseURL, cfgFile.DatabaseUser, cfgFile.DatabasePassword, cfgFile.DatabaseName, config.DBNamesTable, cfgFile.MarketID)
+		itemsList := getItemsToUpdate(cfgFile.DatabaseURL, cfgFile.DatabaseUser, cfgFile.DatabasePassword, cfgFile.DatabaseName, config.DBNamesTable, config.DBPriceTable, cfgFile.MarketID, cfgFile.UpdateQuantity)
 
 		//Used to ensure we compete all items in loop
 		itemsLength := itemsList.Len()

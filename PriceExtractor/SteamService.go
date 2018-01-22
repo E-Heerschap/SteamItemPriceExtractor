@@ -7,7 +7,6 @@ import (
 	"log"
 	"encoding/json"
 	"strconv"
-	"fmt"
 )
 
 type requestWorker struct {

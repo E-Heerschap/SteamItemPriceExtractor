@@ -12,6 +12,7 @@
   "DatabasePassword": "Password",
   "DatabaseName": "DBName",
   "Currency":"1",
+  "UpdateQuantity": 1000,
   "configurations": [
     {
       "AppId":"730",

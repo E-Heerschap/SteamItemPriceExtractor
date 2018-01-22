@@ -27,6 +27,7 @@ type configFile struct {
 	DatabasePassword string `json:"DatabasePassword"`
 	DatabaseName string `json:"DatabaseName"`
 	Currency string `json:"Currency"`
+	UpdateQuantity int `json:"UpdateQuantity"`
 	Configurations []config `json:"configurations"`
 }
 

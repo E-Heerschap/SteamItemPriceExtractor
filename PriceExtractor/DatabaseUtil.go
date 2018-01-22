@@ -13,8 +13,8 @@ import (
 )
 
 
-//GetAllItems gets all the records f
-func getAllItems(dbUrl string, dbUser string, dbPass string, dbName string, dbTable string, marketID int) *list.List{
+//getItemsToUpdate returns the list of items which have the longest time since their price has been updated.
+func getItemsToUpdate(dbUrl string, dbUser string, dbPass string, dbName string, dbItemTable, dbPriceTable string, marketID int, limit int) *list.List{
 
 	returnList := list.New()
 
@@ -33,10 +33,22 @@ func getAllItems(dbUrl string, dbUser string, dbPass string, dbName string, dbTa
 	}
 
 
-	//Getting records (I think wild card only works after the WHERE statement)
-	queryString := "SELECT ItemID, ItemName FROM " + dbTable + " WHERE MarketID = ?;"
+	//TODO look at incorporating the SQL formatter for security.
+	//Query explanation:
+	//This query gets the rows with the maximum time value from the price table for each
+	//item id. A left join is used with these values so every item has its latest time displayed
+	//and null is shown if no time exists. It then orders this in ascending list so the first values
+	//are the items that have not been updated for the longest period of time.
+	queryString := fmt.Sprintf("SELECT  %[1]s.ItemID, %[1]s.ItemName FROM %[1]s " +
+"LEFT JOIN (SELECT %[2]s.ItemID as 'ItemID', MAX(%[2]s.created_at) as 'created_at' " +
+"FROM %[2]s GROUP BY %[2]s.ItemID) As maxTbl ON maxTbl.ItemID = %[1]s.ItemID " +
+"WHERE %[1]s.MarketID = %[3]d " +
+"ORDER BY maxTbl.created_at ASC " +
+"LIMIT %[4]d", dbItemTable, dbPriceTable, marketID, limit)
 
-	results, err := db.Query(queryString, marketID)
+	fmt.Println(queryString)
+
+	results, err := db.Query(queryString)
 
 	defer results.Close()
 
@@ -112,7 +124,7 @@ func createItemPriceDBArguments(data []itemPriceInfo, marketID int) []interface{
 	return returnArray
 }
 
-func uploadItemsToDB(dbUrl string, dbUser string, dbPass string, dbName string, dbTable string, itemPriceArgs []interface{}){
+func uploadItemsToDB(dbUrl string, dbUser string, dbPass string, dbName string, dbPriceTable string, itemPriceArgs []interface{}){
 
 	//Creating Data Source Name (DSN)
 	var dsn string
@@ -129,7 +141,7 @@ func uploadItemsToDB(dbUrl string, dbUser string, dbPass string, dbName string, 
 
 	var buffer bytes.Buffer
 
-	buffer.WriteString("INSERT INTO " + dbTable + " (ItemID, MarketID, LowestPrice, Volume, MedianPrice) VALUES " )
+	buffer.WriteString("INSERT INTO " + dbPriceTable + " (ItemID, MarketID, LowestPrice, Volume, MedianPrice) VALUES " )
 
 	for i := 1; i <= len(itemPriceArgs)/5 - 1; i++ {
 		buffer.WriteString("(?, ?, ?, ?, ?),")
@@ -153,6 +165,5 @@ func uploadItemsToDB(dbUrl string, dbUser string, dbPass string, dbName string, 
 	if err != nil {
 		log.Println("Upload to database failed. ", err)
 	}
-
 
 }
