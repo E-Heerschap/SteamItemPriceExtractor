@@ -60,10 +60,9 @@ func (rw *requestWorker) getItemPriceInfo(job requestJob, proxy string) {
 	}
 
 	var returnItemPriceInfo itemPriceInfo
-	fmt.Println(string(bytes))
 
 	if string(bytes) == "NULL"{
-		fmt.Println(urlStr)
+		log.Println("NULL returned from steam! URL: " + urlStr)
 	}
 
 	err := json.Unmarshal(bytes, &returnItemPriceInfo)

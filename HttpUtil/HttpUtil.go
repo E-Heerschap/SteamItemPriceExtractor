@@ -89,7 +89,7 @@ func SendHttpRequest(c *http.Client, url string) ([]byte, bool, int) {
 	resp, err := c.Get(url)
 
 	if err != nil {
-		log.Fatal("Failed to send http request request: ", err)
+		log.Println("Failed to send http request request: ", err)
 		return nil, false, 0
 	}
 
@@ -100,7 +100,7 @@ func SendHttpRequest(c *http.Client, url string) ([]byte, bool, int) {
 
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal("Failed to read body through ioutil")
+		log.Println("Failed to read body through ioutil")
 		return nil, false, resp.StatusCode
 	}
 
