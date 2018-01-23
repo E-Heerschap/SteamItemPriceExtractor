@@ -90,11 +90,11 @@ func (rw *requestWorker) handleJob(newJob requestJob) {
 
 	//Handles the situation if a panic() occurs.
 	defer func() {
-		if (x := recover(); x != nil){
+		if x := recover(); x != nil {
 			log.Printf("Failed to handle job & catch error. Error: %v", x)
 			rw.completedChan <- itemPriceInfo{Success: false}
 		}
-	}
+	}()
 
 	rw.getItemPriceInfo(newJob, rw.proxy)
 
