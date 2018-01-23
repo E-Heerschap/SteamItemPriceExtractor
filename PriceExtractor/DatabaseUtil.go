@@ -48,6 +48,7 @@ func getItemsToUpdate(dbUrl string, dbUser string, dbPass string, dbName string,
 
 	fmt.Println(queryString)
 
+	//Getting results & error checking
 	results, err := db.Query(queryString)
 
 	defer results.Close()
@@ -58,7 +59,7 @@ func getItemsToUpdate(dbUrl string, dbUser string, dbPass string, dbName string,
 	}
 
 
-	//Filling the list with items
+	//Filling returnList with items
 	for results.Next() {
 		var tempJob requestJob
 		results.Scan(&tempJob.itemId, &tempJob.name)
@@ -69,7 +70,8 @@ func getItemsToUpdate(dbUrl string, dbUser string, dbPass string, dbName string,
 	return returnList
 }
 
-
+//stripLeftZeros removes all of the '0' characters on the left hand
+//side of the string.
 func stripLeftZeros(s string) string {
 	counter := 0
 	for _, ele := range s {
@@ -82,6 +84,7 @@ func stripLeftZeros(s string) string {
 	return ""
 }
 
+//StripNonNumericCharacters removes all non-numeric characters from the passed string
 func StripNonNumericCharacters(s string) string{
 	var newString string
 	for _,ele := range s {
@@ -93,6 +96,8 @@ func StripNonNumericCharacters(s string) string{
 	return newString
 }
 
+//cleanStringNumber removes all 0 characters on the left and removes all non-numeric characters.
+//-1 Is returned if the string is empty.
 func cleanStringNumber(s *string){
 	*s = StripNonNumericCharacters(*s)
 	*s = stripLeftZeros(*s)
@@ -101,13 +106,22 @@ func cleanStringNumber(s *string){
 	}
 }
 
+//createItemPriceDBArguments creates the array of arguments to pass into the upload SQL
+//query that is executed in the uploadItemsToDB function. The parameters from the
+//itemPriceInfo objects are unpacked into an array.
 func createItemPriceDBArguments(data []itemPriceInfo, marketID int) []interface{} {
 
-
+	//Using an interface array so it stores generic types.
+	//len(data) * 5 because each itemPriceInfo has 5 fields to unpack
+	//into the array.
 	returnArray := make([]interface{}, len(data) * 5)
 
+
+	//Unpacking each itemPriceInfo into the array.
 	for i := 0; i < len(data); i++ {
-		//Clean strings first
+
+		//Cleaning strings
+		//e.g $0.52 -> 52 or $1.52 -> 152
 		cleanStringNumber(&data[i].LowestPrice)
 		cleanStringNumber(&data[i].MedianPrice)
 		cleanStringNumber(&data[i].Volume)
@@ -124,9 +138,13 @@ func createItemPriceDBArguments(data []itemPriceInfo, marketID int) []interface{
 	return returnArray
 }
 
-func uploadItemsToDB(dbUrl string, dbUser string, dbPass string, dbName string, dbPriceTable string, itemPriceArgs []interface{}){
+//uploadsItemsToDB uploads all the items passed in the itemsToUpload array to the database
+//with the information supplied. This assumes the database matches the schematics to work with
+//this program.
+//TODO Autocheck DB schematics.
+func uploadItemsToDB(dbUrl string, dbUser string, dbPass string, dbName string, dbPriceTable string, itemsToUpload []itemPriceInfo){
 
-	//Creating Data Source Name (DSN)
+	//Creating Data Source Name (DSN) (Used to connect to database)
 	var dsn string
 	dsn = fmt.Sprintf("%s:%s@tcp(%s)/%s", dbUser, dbPass, dbUrl, dbName)
 
@@ -139,26 +157,27 @@ func uploadItemsToDB(dbUrl string, dbUser string, dbPass string, dbName string, 
 		log.Println("Failed to open database handle. ", err)
 	}
 
+	//Creating buffer to create SQL query
 	var buffer bytes.Buffer
 
+	//Building SQL query
 	buffer.WriteString("INSERT INTO " + dbPriceTable + " (ItemID, MarketID, LowestPrice, Volume, MedianPrice) VALUES " )
 
-	for i := 1; i <= len(itemPriceArgs)/5 - 1; i++ {
+	//Creating parameters to fill for each itemPriceInfo
+	for i := 1; i < len(itemsToUpload); i++ {
 		buffer.WriteString("(?, ?, ?, ?, ?),")
 	}
 
 	//Writing last value with semicolon
 	buffer.WriteString("(?, ?, ?, ?, ?);")
 
-
 	fmt.Println("Executing upload")
 
+	//Creating query string with place holders
 	queryformat := buffer.String()
 	fmt.Println(queryformat)
 
-	for _, ele := range itemPriceArgs {
-		fmt.Println(ele)
-	}
+	itemPriceArgs := createItemPriceDBArguments(itemsToUpload, 0)
 
 	_, err = db.Exec(queryformat, itemPriceArgs...)
 

@@ -66,9 +66,9 @@ func main() {
 					itemsCompletedSuccessfully++
 
 					if itemsCompletedSuccessfully % 5 == 0 {
-						args := createItemPriceDBArguments(itemInfoArray[itemsCompletedSuccessfully-5:itemsCompletedSuccessfully-1], cfgFile.MarketID)
+						itemsToUpload := itemInfoArray[itemsCompletedSuccessfully-5:itemsCompletedSuccessfully-1]
 						fmt.Println("FAT DOG")
-						go uploadItemsToDB(cfgFile.DatabaseURL, cfgFile.DatabaseUser, cfgFile.DatabasePassword, cfgFile.DatabaseName, config.DBPriceTable, args)
+						go uploadItemsToDB(cfgFile.DatabaseURL, cfgFile.DatabaseUser, cfgFile.DatabasePassword, cfgFile.DatabaseName, config.DBPriceTable, itemsToUpload)
 					}
 				}
 				fmt.Println("completed.")
@@ -101,8 +101,8 @@ func main() {
 		}
 
 		//Uploading elements currently in array
-		args := createItemPriceDBArguments(itemInfoArray[:itemsCompletedSuccessfully - 1], cfgFile.MarketID)
-		uploadItemsToDB(cfgFile.DatabaseURL, cfgFile.DatabaseUser, cfgFile.DatabasePassword, cfgFile.DatabaseName, config.DBPriceTable, args)
+		itemsToUpload := itemInfoArray[:itemsCompletedSuccessfully - 1]
+		uploadItemsToDB(cfgFile.DatabaseURL, cfgFile.DatabaseUser, cfgFile.DatabasePassword, cfgFile.DatabaseName, config.DBPriceTable, itemsToUpload)
 
 		close(jobChan)
 		close(completedChan)
