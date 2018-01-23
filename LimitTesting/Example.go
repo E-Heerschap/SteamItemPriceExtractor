@@ -66,10 +66,10 @@ func spamTest(i int){
 	fmt.Println("Ending ", strconv.Itoa(i))
 }
 
-func test() {
+func main() {
 
 
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < 100; i++ {
 		time.Sleep(time.Millisecond * 100)
 		go spamTest(i)
 	}
