@@ -60,7 +60,7 @@ func (rw *requestWorker) getItemPriceInfo(job requestJob, proxy string) {
 
 	var returnItemPriceInfo itemPriceInfo
 
-	if string(bytes) == "NULL"{
+	if string(bytes) == "null"{
 		log.Println("NULL returned from steam! URL: " + urlStr)
 	}
 
@@ -71,6 +71,12 @@ func (rw *requestWorker) getItemPriceInfo(job requestJob, proxy string) {
 		rw.completedChan <- itemPriceInfo{Success: false}
 	}
 
+	if !returnItemPriceInfo.Success {
+
+		log.Println(string(bytes))
+
+	}
+
 	returnItemPriceInfo.itemId = job.itemId
 
 	rw.completedChan <- returnItemPriceInfo
@@ -78,12 +84,24 @@ func (rw *requestWorker) getItemPriceInfo(job requestJob, proxy string) {
 }
 
 
+//handleJob is a wrapper function to handle
+//jobs that arrive on the reqJobChan channel.
 func (rw *requestWorker) handleJob(newJob requestJob) {
+
+	//Handles the situation if a panic() occurs.
+	defer func() {
+		if (x := recover(); x != nil){
+			log.Printf("Failed to handle job & catch error. Error: %v", x)
+			rw.completedChan <- itemPriceInfo{Success: false}
+		}
+	}
 
 	rw.getItemPriceInfo(newJob, rw.proxy)
 
 }
 
+//listen makes the requestWorker listen to the channel and handle
+//jobs which arrive on the channel.
 func (rw *requestWorker) listen() {
 	for {
 		newJob, ok := <- rw.reqJobChan
@@ -97,6 +115,7 @@ func (rw *requestWorker) listen() {
 	}
 }
 
+//startNewRequestWorker initializes a new requestWorker and starts it listening for jobs.
 func StartNewRequestWorker(reqJobChan chan requestJob, err429Chan chan requestJob, completedChan chan itemPriceInfo, currency string, appId string, proxy string){
 	rw := requestWorker{reqJobChan: reqJobChan, err429Chan: err429Chan, completedChan: completedChan, currency: currency, appId: appId, proxy: proxy}
 	rw.listen()
