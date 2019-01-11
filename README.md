@@ -1,3 +1,6 @@
+# Preface
+A project I built during one summer. It has been hiding in a bitbucket repository and I thought with the frustrations I faced when making this it may prove useful for other people. It is not intended for use as a tool, instead, as a reference as a possible solution to getting steam item prices. Even though parts of the code are...questionable, I Hope it helps someone =)
+
 # Introduction
 The steam item manager is a package of tools which handles the gathering, processing and storing of information for steam items. The package currently consists of two tools:
 
