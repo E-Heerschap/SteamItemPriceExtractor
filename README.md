@@ -1,4 +1,4 @@
-#Introduction
+# Introduction
 The steam item manager is a package of tools which handles the gathering, processing and storing of information for steam items. The package currently consists of two tools:
 
 * HashNameExtractor
@@ -9,30 +9,30 @@ The steam item manager is a package of tools which handles the gathering, proces
 
 >PriceExtractor is self explanatory. It uses the the hash names extracted using the *HashNameExtractor* to download information on the item.
 
-#Dependencies
+# Dependencies
 This package requires the following dependencies to compile and run correctly.
 
-###x/net/html
+### x/net/html
 This is the package used to scrape the html from the steam responses.
 
-####Installation:
+#### Installation:
     $ go get golang.org/x/net/html/
 
 The documentation can be found on [go docs](https://godoc.org/golang.org/x/net/html).
 
-###go-sql-driver
+### go-sql-driver
 This is the package that lets golang interact with the mysql server.
 
-####Installation:
+#### Installation:
 
     $ go get github.com/go-sql-driver/mysql
 
 The documentation can be found on its [github page](https://github.com/go-sql-driver/mysql).
 
-###Tor
+### Tor
 Tor allows the the *HashNameExtractor* and *PriceExtractor* switch the IP address that is appearing to steam to accelerate our request speeds. Tor needs to be running on the server(s) that will be running this package.
 
-####Installation:
+#### Installation:
     $ sudo apt-get update
     $ sudo apt-get -y install Tor
 
@@ -67,12 +67,12 @@ Then save the file and restart tor.
 
     $ sudo service tor restart
 
-#Database Scheme
-This package uses MySQL. MySQL should come pre-installed on any Homestead system (a vagrant box created by the makers of Laravel). If the system does not have MySQL installed, a guide can be found [here](https://dev.mysql.com/doc/refman/5.5/en/linux-installation-native.html) to install it.
+# Database Scheme
+This package uses MySQL.
 
 **Make sure all database tables with use UTF-8**
 
-##Game_Items
+## Game_Items
 
 This is a layout for a table which will store information on items from a specific steam game. For example, our database has/will have the table: CSGO_Items which stores the information on CSGO items.
 
@@ -88,7 +88,7 @@ CREATE TABLE `Game_Items` (
 ) ENGINE=InnoDB AUTO_INCREMENT=185 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 ``
 
-##Game_Prices
+## Game_Prices
 
 This is a layout for a table which will store information on the prices of items from a game. For example, our database has/will have the table: CSGO_Prices which would store the information on CSGO item prices.
 
@@ -106,13 +106,6 @@ CREATE TABLE `Game_Prices` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;``
-
-
-#TODO ON README
-
-* Explain configuration files
-
-* Explain which directories to compile each of the seperate packages in.
 
 
 ##Notes:
